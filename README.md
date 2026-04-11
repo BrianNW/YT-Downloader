@@ -114,7 +114,7 @@ run_desktop.bat
 ## Notes
 
 - If `ffmpeg` is installed, the app can merge separate video/audio streams into a single MP4.
-- Without `ffmpeg`, the app falls back to direct MP4 downloads when available.
+- The video compression page will also use a local FFmpeg binary automatically when the `imageio-ffmpeg` package is installed.
+- Without FFmpeg, the downloader still falls back to direct MP4 downloads when available.
 - Temporary download files are cleaned up after the file is delivered.
 - Download history is saved in `history.json`.
-- If `ffmpeg` is installed, the app can merge separate video and audio streams into a single MP4. Without `ffmpeg`, it will still download direct MP4 streams when available.

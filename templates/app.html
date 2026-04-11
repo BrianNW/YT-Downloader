@@ -3,6 +3,37 @@
 {% block title %}Downloader · Video Downloader{% endblock %}
 
 {% block content %}
+<section class="landing-hero download-hero">
+  <div class="hero-copy">
+    <span class="badge">Downloader</span>
+    <h1>Download MP4 from supported video sources.</h1>
+    <p>Paste or drop a YouTube, TikTok, or Instagram link and the app will fetch the best MP4 available with live progress updates.</p>
+
+    <div class="button-group">
+      <a href="{{ url_for('compress_page') }}" class="button secondary">Try Compressor</a>
+      <a href="{{ url_for('history_page') }}" class="button secondary">View History</a>
+    </div>
+  </div>
+
+  <div class="hero-panel">
+    <div class="panel-title">Fast local downloads</div>
+    <div class="panel-card">
+      <div class="panel-row">
+        <strong>3 supported sources</strong>
+        <p>YouTube, TikTok, Instagram</p>
+      </div>
+      <div class="panel-row">
+        <strong>Progress updates</strong>
+        <p>Watch the download advance live in the UI.</p>
+      </div>
+      <div class="panel-row">
+        <strong>Download history</strong>
+        <p>Keep track of completed files and past jobs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <div class="app-grid">
   <section class="download-panel">
     <h2>Download MP4</h2>
@@ -32,20 +63,13 @@
 
   <section class="feature-card">
     <h3>How it works</h3>
-    <p>When you submit a link, the server starts downloading the highest-quality MP4 stream available. Progress updates appear instantly, and the file is offered for download when ready.</p>
+    <p>Submit a link and the backend downloads the best MP4 stream available. You will see progress updates while the job runs, and the file becomes available for download when done.</p>
 
-    <h3>Supported sources</h3>
+    <h3>Support and tips</h3>
     <ul>
-      <li>YouTube</li>
-      <li>TikTok</li>
-      <li>Instagram</li>
-    </ul>
-
-    <h3>Quick tips</h3>
-    <ul>
-      <li>Use the drop zone to paste link text faster.</li>
-      <li>Open the history page for previous downloads.</li>
-      <li>Run <code>python desktop.py</code> for a desktop-style launcher.</li>
+      <li>Drag and drop or paste link text into the form.</li>
+      <li>Use the Compressor page to shrink files after download.</li>
+      <li>History saves completed jobs for quick access.</li>
     </ul>
   </section>
 </div>
