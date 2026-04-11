@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}History · Video Downloader{% endblock %}
+
+{% block content %}
+<div class="history-card">
+  <h2>Download History</h2>
+  {% if history %}
+    {% for item in history %}
+      <div class="history-row">
+        <span><strong>URL:</strong> {{ item.url }}</span>
+        <span class="status-pill">{{ item.status | title }}</span>
+        <div>
+          <span><strong>Started:</strong> {{ item.started_at }}</span>
+          <span><strong>Completed:</strong> {{ item.completed_at or 'Pending' }}</span>
+        </div>
+        {% if item.filename %}
+          <div><strong>File:</strong> {{ item.filename }}</div>
+        {% endif %}
+        {% if item.error %}
+          <div><strong>Error:</strong> {{ item.error }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No download history yet. Start a download on the <a href="{{ url_for('app_page') }}">downloader page</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

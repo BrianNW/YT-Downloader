@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Video Downloader{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <a class="brand" href="{{ url_for('index') }}">Video Downloader</a>
+        <nav class="nav-links">
+          <a href="{{ url_for('app_page') }}">Downloader</a>
+          <a href="{{ url_for('history_page') }}">History</a>
+        </nav>
+      </header>
+
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer>
+        Built with Flask + yt-dlp · run <code>python desktop.py</code> for a desktop-style launcher.
+      </footer>
+    </div>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

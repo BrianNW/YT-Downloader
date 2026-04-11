@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Downloader · Video Downloader{% endblock %}
+
+{% block content %}
+<div class="app-grid">
+  <section class="download-panel">
+    <h2>Download MP4</h2>
+    <p>Paste a video link from YouTube, TikTok, or Instagram, or drop it below to begin.</p>
+
+    <div id="drop-zone" class="drop-zone">
+      <p>Drop a video URL here</p>
+      <p>or paste one into the field below.</p>
+    </div>
+
+    <form id="download-form">
+      <label for="video_url">Video URL</label>
+      <input type="url" id="video_url" name="video_url" placeholder="https://" required />
+      <button type="submit">Start Download</button>
+    </form>
+
+    <div id="status-card" class="status-card">
+      <div>
+        <strong>Status</strong>
+        <p id="status-message">Waiting for a video URL.</p>
+      </div>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-card">
+    <h3>How it works</h3>
+    <p>When you submit a link, the server starts downloading the highest-quality MP4 stream available. Progress updates appear instantly, and the file is offered for download when ready.</p>
+
+    <h3>Supported sources</h3>
+    <ul>
+      <li>YouTube</li>
+      <li>TikTok</li>
+      <li>Instagram</li>
+    </ul>
+
+    <h3>Quick tips</h3>
+    <ul>
+      <li>Use the drop zone to paste link text faster.</li>
+      <li>Open the history page for previous downloads.</li>
+      <li>Run <code>python desktop.py</code> for a desktop-style launcher.</li>
+    </ul>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const dropZone = document.getElementById('drop-zone');
+const form = document.getElementById('download-form');
+const urlInput = document.getElementById('video_url');
+const statusCard = document.getElementById('status-card');
+const statusMessage = document.getElementById('status-message');
+const progressFill = document.getElementById('progress-fill');
+let activeJobId = null;
+
+function showStatus() {
+  statusCard.classList.add('visible');
+}
+
+function updateStatus(message, percent = 0) {
+  showStatus();
+  statusMessage.textContent = message;
+  progressFill.style.width = `${percent}%`;
+}
+
+function setError(message) {
+  updateStatus(message, 0);
+  statusCard.style.borderColor = '#f97316';
+}
+
+function clearError() {
+  statusCard.style.borderColor = '';
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  const text = event.dataTransfer.getData('text/plain') || event.dataTransfer.getData('text/uri-list');
+  if (text) {
+    urlInput.value = text.trim();
+    submitDownload();
+  }
+}
+
+function handleDragOver(event) {
+  event.preventDefault();
+  dropZone.classList.add('dragover');
+}
+
+function handleDragLeave() {
+  dropZone.classList.remove('dragover');
+}
+
+dropZone.addEventListener('dragover', handleDragOver);
+dropZone.addEventListener('dragleave', handleDragLeave);
+dropZone.addEventListener('drop', event => {
+  dropZone.classList.remove('dragover');
+  handleDrop(event);
+});
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  submitDownload();
+});
+
+async function submitDownload() {
+  clearError();
+  const url = urlInput.value.trim();
+  if (!url) {
+    setError('Please paste a video URL first.');
+    return;
+  }
+
+  updateStatus('Requesting download...', 5);
+
+  try {
+    const response = await fetch('/api/start-download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+
+    const payload = await response.json();
+    if (!response.ok) {
+      setError(payload.error || 'Unable to start the download.');
+      return;
+    }
+
+    activeJobId = payload.job_id;
+    updateStatus('Download started. Tracking progress...', 10);
+    pollStatus();
+  } catch (error) {
+    setError('Network error. Please try again.');
+  }
+}
+
+async function pollStatus() {
+  if (!activeJobId) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/status/${activeJobId}`);
+    const payload = await response.json();
+    if (!response.ok) {
+      setError(payload.error || 'Status lookup failed.');
+      return;
+    }
+
+    const { status, progress, message } = payload;
+    updateStatus(message || 'Processing...', progress || 0);
+
+    if (status === 'finished') {
+      updateStatus('Download complete. Starting file download...', 100);
+      window.location = `/download-file/${activeJobId}`;
+      activeJobId = null;
+      return;
+    }
+
+    if (status === 'error') {
+      setError(message || 'Download failed.');
+      activeJobId = null;
+      return;
+    }
+
+    setTimeout(pollStatus, 1200);
+  } catch (error) {
+    setError('Unable to check download status.');
+  }
+}
+</script>
+{% endblock %}

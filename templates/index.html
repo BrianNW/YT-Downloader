@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Video Downloader</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="card">
+        <h1>Video Downloader</h1>
+        <p>Paste a YouTube, TikTok, or Instagram URL and download the MP4 at the highest available quality.</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="/download" method="post" id="download-form">
+          <label for="video_url">Video URL</label>
+          <input type="url" id="video_url" name="video_url" placeholder="https://" required />
+          <button type="submit">Download MP4</button>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

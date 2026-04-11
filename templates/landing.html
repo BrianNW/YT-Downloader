@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Landing · Video Downloader{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Download videos from YouTube, TikTok, and Instagram</h1>
+  <p>Paste a link, drag and drop it onto the downloader, and get the highest-quality MP4 available. The site also tracks recent downloads and provides progress updates as the file is prepared.</p>
+  <div class="button-group">
+    <a href="{{ url_for('app_page') }}" class="button">Open Downloader</a>
+    <a href="{{ url_for('history_page') }}" class="button secondary">View History</a>
+  </div>
+</div>
+
+<div class="features-grid">
+  <div class="feature-card">
+    <h3>Simple workflow</h3>
+    <p>Paste a link from YouTube, TikTok, or Instagram and start a download immediately.</p>
+  </div>
+  <div class="feature-card">
+    <h3>Live progress</h3>
+    <p>See download status while the app fetches and merges the best available streams.</p>
+  </div>
+  <div class="feature-card">
+    <h3>Drag-and-drop support</h3>
+    <p>Drop a video URL directly onto the page instead of typing it manually.</p>
+  </div>
+  <div class="feature-card">
+    <h3>History page</h3>
+    <p>Review recent downloads and failed attempts with a dedicated history view.</p>
+  </div>
+</div>
+{% endblock %}
