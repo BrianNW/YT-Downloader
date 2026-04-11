@@ -125,7 +125,7 @@ def create_ydl_options(progress_hooks=None):
     if ffmpeg_available():
         base_opts.update(
             {
-                "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+                "format": "bestvideo+bestaudio/best",
                 "merge_output_format": "mp4",
             }
         )

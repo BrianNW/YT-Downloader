@@ -9,10 +9,16 @@
   <body>
     <div class="page">
       <header class="topbar">
-        <a class="brand" href="{{ url_for('index') }}">Video Downloader</a>
+        <div class="brand-group">
+          <a class="brand" href="{{ url_for('index') }}">Video Downloader</a>
+          <span class="brand-tag">Local MP4 download hub</span>
+        </div>
         <nav class="nav-links">
           <a href="{{ url_for('app_page') }}">Downloader</a>
           <a href="{{ url_for('history_page') }}">History</a>
+          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">
+            <span id="theme-icon">🌙</span>
+          </button>
         </nav>
       </header>
 
@@ -25,5 +31,22 @@
       </footer>
     </div>
     {% block scripts %}{% endblock %}
+    <script>
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      const storedTheme = localStorage.getItem('yt-downloader-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', initialTheme);
+      if (initialTheme === 'dark') themeIcon.textContent = '☀️';
+
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        localStorage.setItem('yt-downloader-theme', nextTheme);
+        themeIcon.textContent = nextTheme === 'dark' ? '☀️' : '🌙';
+      });
+    </script>
   </body>
 </html>

@@ -3,31 +3,80 @@
 {% block title %}Landing · Video Downloader{% endblock %}
 
 {% block content %}
-<div class="hero">
-  <h1>Download videos from YouTube, TikTok, and Instagram</h1>
-  <p>Paste a link, drag and drop it onto the downloader, and get the highest-quality MP4 available. The site also tracks recent downloads and provides progress updates as the file is prepared.</p>
-  <div class="button-group">
-    <a href="{{ url_for('app_page') }}" class="button">Open Downloader</a>
-    <a href="{{ url_for('history_page') }}" class="button secondary">View History</a>
-  </div>
-</div>
+<section class="landing-hero">
+  <div class="hero-copy">
+    <span class="badge">New</span>
+    <h1>Download videos from YouTube, TikTok, and Instagram in one click.</h1>
+    <p>Fast, polished, and local: paste or drop a video link, watch live progress, and download the best MP4 available. No more browser extensions or complicated workflows.</p>
 
-<div class="features-grid">
-  <div class="feature-card">
-    <h3>Simple workflow</h3>
-    <p>Paste a link from YouTube, TikTok, or Instagram and start a download immediately.</p>
+    <div class="button-group">
+      <a href="{{ url_for('app_page') }}" class="button">Open Downloader</a>
+      <a href="{{ url_for('history_page') }}" class="button secondary">View History</a>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <strong>3 sources</strong>
+        <p>YouTube, TikTok, Instagram</p>
+      </div>
+      <div>
+        <strong>Live status</strong>
+        <p>Progress updates while downloading</p>
+      </div>
+      <div>
+        <strong>Desktop launch</strong>
+        <p>Run locally with one command</p>
+      </div>
+    </div>
   </div>
-  <div class="feature-card">
-    <h3>Live progress</h3>
-    <p>See download status while the app fetches and merges the best available streams.</p>
+
+  <div class="hero-panel">
+    <div class="panel-title">Downloader preview</div>
+    <div class="panel-card">
+      <div class="panel-header">
+        <span>Video ready</span>
+        <span class="status-pill">Active</span>
+      </div>
+      <p class="panel-copy">Paste a link or drop it here, and the app will fetch the highest-quality MP4 available from the selected provider.</p>
+      <div class="panel-row">
+        <span>Source</span>
+        <strong>YouTube</strong>
+      </div>
+      <div class="panel-row">
+        <span>Format</span>
+        <strong>MP4 / 1080p</strong>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 72%;"></div>
+      </div>
+      <p class="panel-note">Downloading... 72%</p>
+    </div>
   </div>
-  <div class="feature-card">
-    <h3>Drag-and-drop support</h3>
-    <p>Drop a video URL directly onto the page instead of typing it manually.</p>
+</section>
+
+<section class="landing-features">
+  <div class="section-heading">
+    <h2>Built for quick local downloads</h2>
+    <p>Everything you need to grab a video and save it as MP4 without leaving your machine.</p>
   </div>
-  <div class="feature-card">
-    <h3>History page</h3>
-    <p>Review recent downloads and failed attempts with a dedicated history view.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <h3>Paste or drop links</h3>
+      <p>Enter a URL or drag it into the page for instant download setup.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Live progress tracking</h3>
+      <p>See download state in real time and know when files are ready.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Download history</h3>
+      <p>Review completed and failed downloads on the history page.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Local desktop experience</h3>
+      <p>Start the app locally and launch it with `python desktop.py`.</p>
+    </div>
   </div>
-</div>
+</section>
 {% endblock %}
