@@ -1,79 +1,96 @@
-# Video Downloader Web App
 
-A lightweight Flask web app that downloads video content from YouTube, TikTok, and Instagram as MP4 files.
+# YouTube Video Downloader & Compressor (Web & Desktop)
+
+A lightweight Flask web app and desktop tool to download and compress video content from YouTube, TikTok, and Instagram as MP4 files.
+
 
 ## What this app does
 
 - Accepts video URLs from YouTube, TikTok, and Instagram
 - Downloads the best available MP4 stream
-- Provides live progress and status updates while downloading
+- Compresses videos to a target size or bitrate
+- Provides live progress and status updates while downloading or compressing
 - Supports drag-and-drop URL input
 - Tracks recent download history on the `/history` page
-- Includes a desktop-style launcher via `desktop.py`
+- Includes a desktop-style launcher and a packaged desktop executable
+
 
 ## Features
 
-- Landing page with product overview
-- Downloader interface with URL input and drag-and-drop support
-- Asynchronous download jobs with progress polling
+- Landing page with tool selection (Downloader, Compressor)
+- Dedicated pages for downloading and compressing videos
+- Asynchronous download and compression jobs with progress polling
 - Download history log stored in `history.json`
 - Local desktop launcher script for quick startup
+- One-click desktop executable (no Python required for end users)
 
-## Deploy locally
 
-1. Open PowerShell in the project folder:
+## Getting Started (Web & Desktop)
 
-   ```powershell
-   cd "f:\MY FILES\Projects\yt-downloader"
-   ```
+### 1. Clone the repository
 
-2. Create and activate a virtual environment:
+```powershell
+git clone https://github.com/<your-username>/<your-repo>.git
+cd yt-downloader
+```
 
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+### 2. Set up Python environment
 
-3. Install Python dependencies:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-   ```powershell
-   python -m pip install -r requirements.txt
-   ```
+### 3. Install dependencies
 
-4. Start the Flask app:
+```powershell
+python -m pip install -r requirements.txt
+python -m pip install yt_dlp flask pyinstaller
+```
 
-   ```powershell
-   python app.py
-   ```
+### 4. Run the web app
 
-5. Open the app in a browser:
+```powershell
+python app.py
+```
+Then open http://127.0.0.1:5000 in your browser.
 
-   ```text
-   http://127.0.0.1:5000
-   ```
 
-## Optional desktop launch
+## Desktop App
 
-To start the app and open it automatically in the browser:
+### 1. Run as a Python script
 
 ```powershell
 python desktop.py
 ```
 
-## Packaging as a desktop executable
+### 2. Build a standalone Windows executable
 
-Install PyInstaller and create a single-file executable:
+Make sure all your latest code and templates are present. Then run:
 
 ```powershell
 python -m pip install pyinstaller
-python -m pyinstaller --onefile desktop.py
+python -m PyInstaller --clean --onefile --add-data "templates;templates" --add-data "static;static" --hidden-import flask --hidden-import yt_dlp desktop.py
 ```
 
-Then run:
+This will create `dist/desktop.exe`. To run it:
 
 ```powershell
 .\dist\desktop.exe
 ```
+
+Or use the provided batch file for persistent error viewing:
+
+```powershell
+run_desktop.bat
+```
+
+### 3. Troubleshooting
+
+- If you see `ModuleNotFoundError` for `yt_dlp` or `flask`, ensure both are installed and add `import yt_dlp` to `desktop.py` if needed.
+- All logs and errors are written to `desktop_app.log` in the project folder.
+- Always rebuild after updating code or templates.
+
 
 ## Publish to GitHub
 

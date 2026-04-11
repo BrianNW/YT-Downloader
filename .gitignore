@@ -11,3 +11,9 @@ ENV/
 .vscode/
 *.log
 history.json
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+desktop_app.log
+run_desktop.bat
