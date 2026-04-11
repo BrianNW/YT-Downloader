@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Compress · Video Downloader{% endblock %}
+
+{% block content %}
+<div class="app-grid">
+  <section class="download-panel">
+    <h2>Compress video</h2>
+    <p>Upload a local video file and choose resolution, aspect ratio, trim, or target size settings.</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="status-card visible">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form id="compress-form" method="post" enctype="multipart/form-data">
+      <label for="video_file">Video file</label>
+      <input type="file" id="video_file" name="video_file" accept="video/*" required />
+      <video id="duration-video" style="display:none;" preload="metadata"></video>
+
+      <label for="resolution">Resolution</label>
+      <select id="resolution" name="resolution">
+        <option value="original">Original</option>
+        <option value="1080p">1080p</option>
+        <option value="720p">720p</option>
+        <option value="480p">480p</option>
+        <option value="360p">360p</option>
+      </select>
+
+      <label for="aspect_ratio">Aspect ratio</label>
+      <select id="aspect_ratio" name="aspect_ratio">
+        <option value="original">Original</option>
+        <option value="16:9">16:9</option>
+        <option value="4:3">4:3</option>
+        <option value="1:1">1:1</option>
+      </select>
+
+      <div class="trim-grid">
+        <div>
+          <label for="start_trim">Start trim (sec)</label>
+          <input type="number" id="start_trim" name="start_trim" min="0" value="0" />
+        </div>
+        <div>
+          <label for="end_trim">End trim (sec)</label>
+          <input type="number" id="end_trim" name="end_trim" min="0" value="0" />
+        </div>
+      </div>
+
+      <div class="target-group">
+        <label>Target size</label>
+        <div class="target-options">
+          <label>
+            <input type="radio" name="target_mode" value="original" checked />
+            Keep original quality
+          </label>
+          <label>
+            <input type="radio" name="target_mode" value="percentage" />
+            Reduce by
+            <input type="number" name="target_percentage" min="10" max="100" step="5" value="75" />
+            %
+          </label>
+          <label>
+            <input type="radio" name="target_mode" value="size" />
+            Target file size
+            <input type="number" name="target_size_mb" min="1" step="1" value="10" />
+            MB
+          </label>
+          <label>
+            <input type="radio" name="target_mode" value="bitrate" />
+            Target bitrate
+            <input type="number" name="target_bitrate" min="64" step="16" value="800" />
+            kbps
+          </label>
+        </div>
+      </div>
+
+      <div id="estimate-preview" class="estimate-preview">
+        Estimated output size: <strong id="estimate-text">Select a file to preview.</strong>
+      </div>
+
+      <button type="submit" id="compress-button">Compress video</button>
+    </form>
+
+    <div id="compression-status" class="status-card">
+      <div>
+        <strong>Status</strong>
+        <p id="compression-message">Ready to compress your video.</p>
+      </div>
+      <div class="progress-bar">
+        <div id="compression-fill" class="progress-fill"></div>
+      </div>
+      <a id="download-compressed-link" class="button secondary" style="display: none; width: fit-content; margin-top: 18px;" href="#">Download compressed file</a>
+    </div>
+  </section>
+
+  <div id="compression-overlay" class="page-overlay hidden">
+    <div class="overlay-card">
+      <div class="loader"></div>
+      <div>
+        <strong>Compressing video</strong>
+        <p>Hang tight — this can take a minute depending on your file size.</p>
+        <p id="overlay-percent" class="overlay-percent">0%</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="feature-card">
+    <h3>Compression options</h3>
+    <ul>
+      <li>Resize output to a smaller resolution.</li>
+      <li>Keep the original aspect ratio or force 16:9, 4:3, or 1:1.</li>
+      <li>Trim the start and end of your clip.</li>
+      <li>Set a target size by percentage or MB.</li>
+    </ul>
+    <p>After compression, the file is returned as a downloadable MP4.</p>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const compressForm = document.getElementById('compress-form');
+const compressButton = document.getElementById('compress-button');
+const downloadLink = document.getElementById('download-compressed-link');
+const statusCard = document.getElementById('compression-status');
+const messageEl = document.getElementById('compression-message');
+const fillEl = document.getElementById('compression-fill');
+const overlay = document.getElementById('compression-overlay');
+const overlayPercent = document.getElementById('overlay-percent');
+const estimateText = document.getElementById('estimate-text');
+const videoFileInput = document.getElementById('video_file');
+const durationVideo = document.getElementById('duration-video');
+let fileDuration = null;
+const targetModeInputs = document.querySelectorAll('input[name="target_mode"]');
+const percentageInput = document.querySelector('input[name="target_percentage"]');
+const sizeInput = document.querySelector('input[name="target_size_mb"]');
+const bitrateInput = document.querySelector('input[name="target_bitrate"]');
+
+function updateCompressionStatus(message, percent = 0, active = true) {
+  statusCard.classList.add('visible');
+  messageEl.textContent = message;
+  fillEl.style.width = `${Math.min(100, percent)}%`;
+  overlayPercent.textContent = `${Math.min(100, Math.max(0, percent))}%`;
+  compressButton.disabled = active;
+  if (downloadLink) {
+    downloadLink.style.display = active ? 'none' : downloadLink.style.display;
+  }
+}
+
+function setCompressionError(message) {
+  updateCompressionStatus(message, 0, false);
+  statusCard.style.borderColor = '#f97316';
+  overlayPercent.textContent = '0%';
+  hideOverlay();
+}
+
+async function pollCompressionStatus(jobId) {
+  try {
+    const response = await fetch(`/api/compression-status/${jobId}`);
+    const payload = await response.json();
+
+    if (!response.ok) {
+      setCompressionError(payload.error || 'Compression status unavailable.');
+      return;
+    }
+
+    updateCompressionStatus(payload.message || 'Compressing video...', payload.progress || 0, payload.status !== 'finished' && payload.status !== 'error');
+
+    if (payload.status === 'finished') {
+      hideOverlay();
+      messageEl.textContent = 'Compression complete. Download is ready below.';
+      overlayPercent.textContent = '100%';
+      compressButton.disabled = false;
+      downloadLink.href = `/download-compressed/${jobId}`;
+      downloadLink.style.display = 'inline-flex';
+      downloadLink.textContent = 'Download compressed MP4';
+      return;
+    }
+
+    if (payload.status === 'error') {
+      setCompressionError(payload.message || 'Compression failed.');
+      return;
+    }
+
+    setTimeout(() => pollCompressionStatus(jobId), 1200);
+  } catch (error) {
+    setCompressionError('Unable to check compression progress.');
+  }
+}
+
+function showOverlay() {
+  overlay.classList.remove('hidden');
+  overlay.classList.add('visible');
+}
+
+function hideOverlay() {
+  overlay.classList.remove('visible');
+  overlay.classList.add('hidden');
+}
+
+function formatBytes(bytes) {
+  return (bytes / 1024 / 1024).toFixed(2);
+}
+
+function estimateFromDuration(targetMB, duration) {
+  const totalBytes = Math.max(targetMB * 1024 * 1024, 1);
+  const totalBps = (totalBytes * 8) / duration;
+  let audioKbps = Math.min(64, Math.max(16, Math.round(totalBps / 1000 * 0.2)));
+  let videoKbps = Math.max(32, Math.round(totalBps / 1000 - audioKbps));
+  const estimatedBytes = ((videoKbps + audioKbps) * duration * 1000) / 8;
+  return estimatedBytes / 1024 / 1024;
+}
+
+function updateEstimate() {
+  const file = videoFileInput.files[0];
+  if (!file) {
+    estimateText.textContent = 'Select a file to preview.';
+    return;
+  }
+
+  const originalMB = file.size / 1024 / 1024;
+  const selectedMode = Array.from(targetModeInputs).find((input) => input.checked)?.value;
+
+  if (selectedMode === 'percentage') {
+    const percent = Number(percentageInput.value) || 0;
+    const outputMB = Math.max(0.05, originalMB * Math.max(0.05, (100 - percent) / 100));
+    if (fileDuration) {
+      const estimated = estimateFromDuration(outputMB, fileDuration);
+      estimateText.textContent = `Estimated output: ~${estimated.toFixed(2)} MB (${percent}% reduction)`;
+    } else {
+      estimateText.textContent = `Estimated output: ~${outputMB.toFixed(2)} MB (${percent}% reduction)`;
+    }
+  } else if (selectedMode === 'size') {
+    const target = Number(sizeInput.value) || 0;
+    if (fileDuration && target > 0) {
+      const estimated = estimateFromDuration(Math.min(target, originalMB), fileDuration);
+      estimateText.textContent = `Estimated output: ~${estimated.toFixed(2)} MB`;
+    } else {
+      estimateText.textContent = `Estimated output: ~${Math.min(target, originalMB).toFixed(2)} MB`;
+    }
+  } else if (selectedMode === 'bitrate') {
+    const bitrate = Number(bitrateInput.value) || 0;
+    if (fileDuration && bitrate > 0) {
+      const estimatedBytes = ((bitrate + 64) * fileDuration * 1000) / 8;
+      estimateText.textContent = `Estimated output: ~${formatBytes(estimatedBytes)} MB at ${bitrate} kbps`;
+    } else {
+      estimateText.textContent = `Target bitrate: ${bitrate > 0 ? bitrate + ' kbps' : 'Not set'}`;
+    }
+  } else {
+    estimateText.textContent = `Estimated output: ~${originalMB.toFixed(2)} MB (original quality)`;
+  }
+}
+
+targetModeInputs.forEach((input) => input.addEventListener('change', updateEstimate));
+percentageInput.addEventListener('input', updateEstimate);
+sizeInput.addEventListener('input', updateEstimate);
+bitrateInput.addEventListener('input', updateEstimate);
+
+function loadDuration(file) {
+  if (!file) {
+    fileDuration = null;
+    updateEstimate();
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  durationVideo.src = url;
+  durationVideo.load();
+  durationVideo.onloadedmetadata = () => {
+    fileDuration = durationVideo.duration;
+    URL.revokeObjectURL(url);
+    updateEstimate();
+  };
+}
+
+videoFileInput.addEventListener('change', (event) => {
+  loadDuration(event.target.files[0]);
+  updateEstimate();
+});
+
+compressForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  statusCard.style.borderColor = '';
+  updateCompressionStatus('Uploading video and starting compression...', 2, true);
+  showOverlay();
+
+  const formData = new FormData(compressForm);
+  try {
+    const response = await fetch('/api/start-compression', {
+      method: 'POST',
+      body: formData,
+    });
+    const payload = await response.json();
+
+    if (!response.ok) {
+      setCompressionError(payload.error || 'Unable to start compression.');
+      return;
+    }
+
+    pollCompressionStatus(payload.job_id);
+  } catch (error) {
+    setCompressionError('Network error. Please try again.');
+  }
+});
+</script>
+{% endblock %}

@@ -297,10 +297,37 @@ a {
   gap: 20px;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
+.landing-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.tool-card,
 .feature-card {
   min-height: 220px;
   background: var(--secondary-soft);
   border-color: rgba(239, 68, 68, 0.12);
+}
+.tool-card {
+  display: block;
+  padding: 24px;
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tool-card:hover,
+.tool-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--button);
+  box-shadow: var(--shadow);
+}
+.tool-card h3 {
+  margin-top: 0;
+}
+.tool-card.coming-soon {
+  opacity: 0.96;
+  border-style: dashed;
 }
 
 .feature-card h3,
@@ -382,12 +409,18 @@ label {
 }
 
 input[type="url"],
+input[type="file"],
+input[type="number"],
+select,
 button,
 textarea {
   font: inherit;
 }
 
-input[type="url"] {
+input[type="url"],
+input[type="file"],
+input[type="number"],
+select {
   width: 100%;
   padding: 16px 18px;
   border-radius: 0;
@@ -418,6 +451,83 @@ button {
   transition: border-color 0.2s ease, background 0.2s ease;
   margin-bottom: 20px;
   background: var(--surface);
+}
+
+.trim-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.target-options {
+  display: grid;
+  gap: 12px;
+}
+
+.target-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.target-options input[type="number"] {
+  width: 100px;
+}
+
+.estimate-preview {
+  margin: 18px 0 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.page-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.page-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.page-overlay .overlay-card {
+  display: grid;
+  gap: 18px;
+  align-items: center;
+  justify-items: center;
+  width: min(420px, calc(100% - 48px));
+  padding: 28px;
+  border-radius: 0;
+  background: var(--page-bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.loader {
+  width: 62px;
+  height: 62px;
+  border: 6px solid rgba(17, 24, 39, 0.12);
+  border-top-color: var(--secondary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .drop-zone.dragover {
