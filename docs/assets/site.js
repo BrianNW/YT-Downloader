@@ -9,6 +9,7 @@ const homeDownloadStatus = document.getElementById("home-download-status");
 const homeDownloadMessage = document.getElementById("home-download-message");
 const homeDownloadProgress = document.getElementById("home-download-progress");
 const configuredApiBase = (window.CLIP_API_BASE || "").trim();
+const configuredDownloadMode = (window.CLIP_DOWNLOAD_MODE || "direct").trim().toLowerCase();
 const localhostApiBase = "http://127.0.0.1:5000";
 const apiBase = configuredApiBase || (window.location.protocol === "file:" ? localhostApiBase : "");
 const supportedDomains = [
@@ -56,6 +57,81 @@ function getApiUrl(path) {
     return null;
   }
   return `${apiBase}${path}`;
+}
+
+function readFilenameFromDisposition(headerValue) {
+  if (!headerValue) {
+    return "video.mp4";
+  }
+
+  const utf8Match = headerValue.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match && utf8Match[1]) {
+    try {
+      return decodeURIComponent(utf8Match[1]);
+    } catch {
+      return utf8Match[1];
+    }
+  }
+
+  const simpleMatch = headerValue.match(/filename="?([^";]+)"?/i);
+  if (simpleMatch && simpleMatch[1]) {
+    return simpleMatch[1];
+  }
+
+  return "video.mp4";
+}
+
+async function startDirectDownload(url) {
+  const directUrl = getApiUrl("/api/download-direct");
+  if (!directUrl) {
+    updateHomeDownloadStatus(
+      "Set window.CLIP_API_BASE in docs/assets/config.js to your hosted backend URL.",
+      0,
+      true,
+    );
+    return;
+  }
+
+  updateHomeDownloadStatus("Downloading video. This can take up to a minute...", 35, false);
+
+  try {
+    const response = await fetch(directUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      let errorMessage = "Unable to start the download.";
+      try {
+        const payload = await response.json();
+        errorMessage = payload.error || errorMessage;
+      } catch {
+        errorMessage = `Download failed (${response.status}).`;
+      }
+      updateHomeDownloadStatus(errorMessage, 0, true);
+      return;
+    }
+
+    const blob = await response.blob();
+    const filename = readFilenameFromDisposition(response.headers.get("content-disposition"));
+    const downloadUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(downloadUrl);
+
+    updateHomeDownloadStatus("Download complete.", 100, false);
+  } catch {
+    updateHomeDownloadStatus(
+      "Unable to reach downloader backend. Verify CLIP_API_BASE or backend uptime.",
+      0,
+      true,
+    );
+  }
 }
 
 async function pollHomeDownloadStatus() {
@@ -113,16 +189,6 @@ if (homeDownloadForm) {
   homeDownloadForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const startUrl = getApiUrl("/api/start-download");
-    if (!startUrl) {
-      updateHomeDownloadStatus(
-        "Set window.CLIP_API_BASE in docs/assets/config.js to your hosted backend URL.",
-        0,
-        true,
-      );
-      return;
-    }
-
     const url = homeVideoUrlInput.value.trim();
     if (!url) {
       updateHomeDownloadStatus("Paste a video URL first.", 0, true);
@@ -134,7 +200,22 @@ if (homeDownloadForm) {
       return;
     }
 
-    updateHomeDownloadStatus("Contacting the local downloader...", 5, false);
+    if (configuredDownloadMode === "direct") {
+      await startDirectDownload(url);
+      return;
+    }
+
+    const startUrl = getApiUrl("/api/start-download");
+    if (!startUrl) {
+      updateHomeDownloadStatus(
+        "Set window.CLIP_API_BASE in docs/assets/config.js to your hosted backend URL.",
+        0,
+        true,
+      );
+      return;
+    }
+
+    updateHomeDownloadStatus("Contacting downloader backend...", 5, false);
 
     try {
       const response = await fetch(startUrl, {

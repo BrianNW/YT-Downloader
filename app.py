@@ -28,7 +28,7 @@ from yt_dlp import YoutubeDL
 imageio_ffmpeg = None
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.secret_key = "replace-this-with-a-secure-random-string"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "replace-this-with-a-secure-random-string")
 
 
 @app.after_request
@@ -855,6 +855,34 @@ def api_start_download():
     thread.start()
 
     return jsonify({"job_id": job["id"]})
+
+
+@app.route("/api/download-direct", methods=["POST"])
+def api_download_direct():
+    data = request.get_json(silent=True) or request.form
+    url = (data.get("url") or data.get("video_url") or "").strip()
+    if not url:
+        return jsonify({"error": "Video URL is required."}), 400
+
+    if not is_supported_url(url):
+        return jsonify({"error": "Only YouTube, TikTok, and Instagram URLs are supported."}), 400
+
+    temp_dir = None
+    try:
+        video_path, temp_dir = download_video(url)
+        filename = os.path.basename(video_path)
+
+        @after_this_request
+        def cleanup(response):
+            if temp_dir:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            return response
+
+        return send_file(video_path, as_attachment=True, download_name=filename, mimetype="video/mp4")
+    except Exception as exc:
+        if temp_dir:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+        return jsonify({"error": f"Download failed: {exc}"}), 500
 
 
 @app.route("/api/status/<job_id>")

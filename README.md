@@ -115,7 +115,7 @@ run_desktop.bat
 
 This repository now includes a static GitHub Pages site in `docs/` and an Actions workflow in `.github/workflows/deploy-pages.yml`.
 
-Important: GitHub Pages only hosts the project website. It cannot run the Flask downloader, yt-dlp jobs, or FFmpeg compression. The actual app still runs locally through `python app.py`, `python desktop.py`, or the packaged desktop executable.
+Important: GitHub Pages hosts the browser UI only. The Python downloader backend must run on a separate host.
 
 ### Enable Pages
 
@@ -130,28 +130,35 @@ Important: GitHub Pages only hosts the project website. It cannot run the Flask 
 - `docs/assets/` contains the static CSS and JavaScript for the site.
 - `.github/workflows/deploy-pages.yml` deploys the `docs/` folder on pushes to `main` or `master`.
 
-### Recommended release setup
+### Vercel backend (recommended)
 
-If you want the Pages site to offer a real desktop download, create a GitHub Release and attach the built `desktop.exe` from `dist/`.
+This repository includes `vercel.json` so Vercel can run the Flask app as a Python function.
 
-### Make Pages downloads work without local installs
-
-GitHub Pages is static hosting. To let users download directly from the Pages form, deploy the Flask API to a cloud host and point the frontend to that URL.
-
-1. Deploy this repository as a web service on Render (the repo now includes `render.yaml` and `Procfile`).
-2. After deploy, copy your service URL (for example, `https://clip-downloader-api.onrender.com`).
-3. In `docs/assets/config.js`, set:
+1. Import the repository into Vercel.
+2. Keep default build settings (Vercel will use `requirements.txt`).
+3. Add environment variable `FLASK_SECRET_KEY` in Vercel project settings.
+4. Deploy and copy your backend URL, for example `https://yt-downloader.vercel.app`.
+5. In `docs/assets/config.js`, set:
 
    ```javascript
-   window.CLIP_API_BASE = "https://your-service-url.onrender.com";
+   window.CLIP_API_BASE = "https://your-vercel-url.vercel.app";
+   window.CLIP_DOWNLOAD_MODE = "direct";
    ```
 
-4. Commit and push the updated `docs/assets/config.js`.
-5. GitHub Pages will then use your hosted backend instead of requiring a local app.
+6. Commit and push the updated `docs/assets/config.js`.
+7. GitHub Pages will then use your hosted backend instead of requiring a local app.
 
 Notes:
-- The backend must stay online for downloads to work.
-- For production, set a strong Flask secret key via environment variable and monitor resource limits on your host.
+- Vercel serverless is best for short to medium downloads. Very long jobs can hit function limits.
+- For heavy/long-running jobs, use a worker-style host (for example Render) and switch to async mode:
+
+  ```javascript
+  window.CLIP_DOWNLOAD_MODE = "async";
+  ```
+
+### Recommended release setup
+
+If you want the Pages site to offer a desktop download, create a GitHub Release and attach the built `desktop.exe` from `dist/`.
 
 ## Notes
 

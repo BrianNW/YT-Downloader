@@ -34,8 +34,8 @@
             <h1>Download and compress videos on your own machine.</h1>
             <p>
               This repository ships a Flask app and Windows desktop launcher for MP4 downloads and
-              compression. GitHub Pages hosts this static project site, while the actual downloader
-              runs locally because it depends on Python, yt-dlp, and FFmpeg.
+              compression. GitHub Pages hosts this static project site, and you can connect it to a
+              hosted backend (for example Vercel) so downloads work directly in the browser.
             </p>
 
             <div id="download-now" class="download-home-inline">
@@ -68,7 +68,7 @@
                 <div class="download-status-copy">
                   <strong>Status</strong>
                   <p id="home-download-message">
-                    Ready for a video link. This form works through your configured hosted backend.
+                    Ready for a video link. This form runs through your configured hosted backend.
                   </p>
                 </div>
                 <div class="progress-bar">
@@ -93,7 +93,7 @@
               </div>
               <div>
                 <strong>Runtime</strong>
-                <p>Runs locally, not inside GitHub Pages</p>
+                <p>Browser UI on Pages, downloader API on your host</p>
               </div>
             </div>
           </div>
@@ -107,19 +107,19 @@
               </div>
               <p class="panel-copy">
                 GitHub Pages can host documentation, release links, setup instructions, and project
-                updates.
+                updates, plus this browser UI that calls your hosted downloader API.
               </p>
               <div class="panel-row">
                 <strong>Not supported on Pages</strong>
-                <span>Flask routes, yt-dlp jobs, file uploads, FFmpeg processing</span>
+                <span>Python execution, yt-dlp jobs, file processing</span>
               </div>
               <div class="panel-row">
                 <strong>Supported on Pages</strong>
-                <span>Instructions, downloads, screenshots, release notes, source links</span>
+                <span>Frontend UI, docs, release links, backend API integration</span>
               </div>
               <p class="panel-note">
-                If you want a live hosted app later, move the backend to a Python host such as
-                Render, Railway, or Azure App Service.
+                Deploy the API backend on Vercel (or Render/Railway) and set the API base URL in
+                docs/assets/config.js.
               </p>
             </div>
           </aside>
