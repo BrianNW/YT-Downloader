@@ -23,12 +23,12 @@
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #3b2418;
-  --page-bg: rgba(56, 32, 24, 0.92);
-  --surface: rgba(62, 30, 21, 0.96);
-  --border: rgba(196, 133, 106, 0.18);
-  --text: #f4efe7;
-  --muted: #cbb4a0;
+  --bg: #0b1220;
+  --page-bg: rgba(17, 24, 39, 0.92);
+  --surface: rgba(21, 32, 52, 0.96);
+  --border: rgba(125, 177, 255, 0.2);
+  --text: #e6f0ff;
+  --muted: #a9c2e8;
   --accent: #f8fafc;
   --accent-soft: rgba(248, 250, 252, 0.08);
   --secondary: #22c55e;
@@ -36,8 +36,8 @@ html[data-theme="dark"] {
   --button: linear-gradient(135deg, #16a34a, #22c55e);
   --button-text: #020617;
   --button-secondary: rgba(255, 255, 255, 0.08);
-  --topbar-bg: #2e1c12;
-  --topbar-text: #f4efe7;
+  --topbar-bg: #0a152b;
+  --topbar-text: #e6f0ff;
   --shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
 }
 

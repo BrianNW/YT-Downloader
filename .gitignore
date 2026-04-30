@@ -9,6 +9,7 @@ env/
 ENV/
 .idea/
 .vscode/
+node_modules/
 *.log
 history.json
 # PyInstaller build artifacts

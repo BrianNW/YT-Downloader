@@ -19,14 +19,14 @@
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #201814;
-  --page-bg: rgba(43, 31, 24, 0.94);
-  --surface: rgba(50, 37, 29, 0.96);
-  --border: rgba(228, 191, 166, 0.16);
-  --text: #f4efe7;
-  --muted: #d2b7a0;
-  --topbar-bg: #120e0b;
-  --topbar-text: #f4efe7;
+  --bg: #0b1220;
+  --page-bg: rgba(17, 24, 39, 0.94);
+  --surface: rgba(21, 32, 52, 0.96);
+  --border: rgba(125, 177, 255, 0.2);
+  --text: #e6f0ff;
+  --muted: #a9c2e8;
+  --topbar-bg: #0a152b;
+  --topbar-text: #e6f0ff;
   --accent: #4ade80;
   --accent-soft: rgba(74, 222, 128, 0.12);
   --button: linear-gradient(135deg, #15803d, #4ade80);
