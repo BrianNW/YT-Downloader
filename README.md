@@ -134,6 +134,25 @@ Important: GitHub Pages only hosts the project website. It cannot run the Flask 
 
 If you want the Pages site to offer a real desktop download, create a GitHub Release and attach the built `desktop.exe` from `dist/`.
 
+### Make Pages downloads work without local installs
+
+GitHub Pages is static hosting. To let users download directly from the Pages form, deploy the Flask API to a cloud host and point the frontend to that URL.
+
+1. Deploy this repository as a web service on Render (the repo now includes `render.yaml` and `Procfile`).
+2. After deploy, copy your service URL (for example, `https://clip-downloader-api.onrender.com`).
+3. In `docs/assets/config.js`, set:
+
+   ```javascript
+   window.CLIP_API_BASE = "https://your-service-url.onrender.com";
+   ```
+
+4. Commit and push the updated `docs/assets/config.js`.
+5. GitHub Pages will then use your hosted backend instead of requiring a local app.
+
+Notes:
+- The backend must stay online for downloads to work.
+- For production, set a strong Flask secret key via environment variable and monitor resource limits on your host.
+
 ## Notes
 
 - If `ffmpeg` is installed, the app can merge separate video/audio streams into a single MP4.

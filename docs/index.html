@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>YT Downloader</title>
+    <title>CLIP DOWNLOADER</title>
     <meta
       name="description"
-      content="Project site for YT Downloader, a local Flask and desktop tool for downloading and compressing MP4 video files."
+      content="Project site for CLIP DOWNLOADER, a local Flask and desktop tool for downloading and compressing MP4 video files."
     />
     <link rel="stylesheet" href="./assets/site.css" />
   </head>
@@ -15,11 +15,11 @@
     <div class="page">
       <header class="topbar">
         <div class="brand-group">
-          <a class="brand" href="./index.html">YT Downloader</a>
-          <span class="brand-tag">GitHub Pages project site</span>
+          <a class="brand" href="./index.html">CLIP DOWNLOADER</a>
         </div>
         <nav class="nav-links">
           <a href="#overview">Overview</a>
+          <a href="#download-now">Download</a>
           <a href="#run-local">Run Local</a>
           <a href="#publish">Publish</a>
           <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">
@@ -31,13 +31,51 @@
       <main>
         <section class="landing-hero" id="overview">
           <div class="hero-copy card">
-            <span class="badge">Local-first workflow</span>
             <h1>Download and compress videos on your own machine.</h1>
             <p>
               This repository ships a Flask app and Windows desktop launcher for MP4 downloads and
               compression. GitHub Pages hosts this static project site, while the actual downloader
               runs locally because it depends on Python, yt-dlp, and FFmpeg.
             </p>
+
+            <div id="download-now" class="download-home-inline">
+              <h2>Download from a link</h2>
+              <p class="download-inline-copy">
+                Paste a YouTube, TikTok, or Instagram link. Downloads start from this page through
+                your configured hosted backend service.
+              </p>
+
+              <div class="platform-pills" aria-label="Supported platforms">
+                <span>YouTube</span>
+                <span>TikTok</span>
+                <span>Instagram</span>
+              </div>
+
+              <form id="home-download-form" class="download-form">
+                <label for="home-video-url">Video URL</label>
+                <input
+                  type="url"
+                  id="home-video-url"
+                  name="video_url"
+                  placeholder="https://"
+                  autocomplete="url"
+                  required
+                />
+                <button type="submit" class="button download-submit">Download MP4</button>
+              </form>
+
+              <div id="home-download-status" class="download-status" aria-live="polite">
+                <div class="download-status-copy">
+                  <strong>Status</strong>
+                  <p id="home-download-message">
+                    Ready for a video link. This form works through your configured hosted backend.
+                  </p>
+                </div>
+                <div class="progress-bar">
+                  <div id="home-download-progress" class="progress-fill"></div>
+                </div>
+              </div>
+            </div>
 
             <div class="button-group">
               <a class="button" href="https://github.com/BrianNW/YT-Downloader/releases/latest">Latest release</a>
@@ -164,10 +202,11 @@ python app.py</code></pre>
       </main>
 
       <footer>
-        Built from the YT Downloader repository. The downloader itself runs locally with Flask,
+        Built from the CLIP DOWNLOADER repository. The downloader itself runs locally with Flask,
         yt-dlp, and FFmpeg.
       </footer>
     </div>
+    <script src="./assets/config.js"></script>
     <script src="./assets/site.js"></script>
   </body>
 </html>
