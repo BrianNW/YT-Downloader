@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YT Downloader</title>
+    <meta
+      name="description"
+      content="Project site for YT Downloader, a local Flask and desktop tool for downloading and compressing MP4 video files."
+    />
+    <link rel="stylesheet" href="./assets/site.css" />
+  </head>
+  <body>
+    <div class="page-shell"></div>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand-group">
+          <a class="brand" href="./index.html">YT Downloader</a>
+          <span class="brand-tag">GitHub Pages project site</span>
+        </div>
+        <nav class="nav-links">
+          <a href="#overview">Overview</a>
+          <a href="#run-local">Run Local</a>
+          <a href="#publish">Publish</a>
+          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">
+            <span id="theme-icon">&#9790;</span>
+          </button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="landing-hero" id="overview">
+          <div class="hero-copy card">
+            <span class="badge">Local-first workflow</span>
+            <h1>Download and compress videos on your own machine.</h1>
+            <p>
+              This repository ships a Flask app and Windows desktop launcher for MP4 downloads and
+              compression. GitHub Pages hosts this static project site, while the actual downloader
+              runs locally because it depends on Python, yt-dlp, and FFmpeg.
+            </p>
+
+            <div class="button-group">
+              <a class="button" href="https://github.com/BrianNW/YT-Downloader/releases/latest">Latest release</a>
+              <a class="button secondary" href="https://github.com/BrianNW/YT-Downloader">View source</a>
+            </div>
+
+            <div class="hero-stats">
+              <div>
+                <strong>Sources</strong>
+                <p>YouTube, TikTok, Instagram</p>
+              </div>
+              <div>
+                <strong>Formats</strong>
+                <p>Download MP4 and export compressed MP4</p>
+              </div>
+              <div>
+                <strong>Runtime</strong>
+                <p>Runs locally, not inside GitHub Pages</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="hero-panel">
+            <div class="panel-title">What Pages hosts</div>
+            <div class="panel-card">
+              <div class="panel-header">
+                <span>Project site</span>
+                <span class="status-pill">Static</span>
+              </div>
+              <p class="panel-copy">
+                GitHub Pages can host documentation, release links, setup instructions, and project
+                updates.
+              </p>
+              <div class="panel-row">
+                <strong>Not supported on Pages</strong>
+                <span>Flask routes, yt-dlp jobs, file uploads, FFmpeg processing</span>
+              </div>
+              <div class="panel-row">
+                <strong>Supported on Pages</strong>
+                <span>Instructions, downloads, screenshots, release notes, source links</span>
+              </div>
+              <p class="panel-note">
+                If you want a live hosted app later, move the backend to a Python host such as
+                Render, Railway, or Azure App Service.
+              </p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="section-block" id="run-local">
+          <div class="section-heading">
+            <h2>Run it locally</h2>
+            <p>Use the repo for development or install the packaged Windows desktop build.</p>
+          </div>
+
+          <div class="features-grid">
+            <article class="feature-card">
+              <h3>Web app</h3>
+              <p>Start the Flask server and open the local browser UI.</p>
+              <pre><code>python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python app.py</code></pre>
+            </article>
+
+            <article class="feature-card">
+              <h3>Desktop launcher</h3>
+              <p>Run the desktop wrapper that opens the local app automatically.</p>
+              <pre><code>python desktop.py</code></pre>
+              <p class="muted">Or download the latest packaged executable from GitHub Releases.</p>
+            </article>
+
+            <article class="feature-card">
+              <h3>What the app does</h3>
+              <ul class="feature-list">
+                <li>Download the best available MP4 stream for supported links.</li>
+                <li>Compress local video files to a target size, bitrate, or resolution.</li>
+                <li>Track recent job history in a local JSON log.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-block" id="publish">
+          <div class="section-heading">
+            <h2>GitHub Pages publishing</h2>
+            <p>
+              This repository is configured to deploy the contents of the docs folder with GitHub
+              Actions.
+            </p>
+          </div>
+
+          <div class="features-grid publish-grid">
+            <article class="feature-card">
+              <h3>Already configured</h3>
+              <ul class="feature-list">
+                <li>Static site lives in the docs folder.</li>
+                <li>Workflow publishes on pushes to main or master.</li>
+                <li>No Jekyll build step is required.</li>
+              </ul>
+            </article>
+
+            <article class="feature-card">
+              <h3>One-time GitHub setting</h3>
+              <ol class="feature-list ordered-list">
+                <li>Open the repository on GitHub.</li>
+                <li>Go to Settings, then Pages.</li>
+                <li>Set Source to GitHub Actions.</li>
+              </ol>
+            </article>
+
+            <article class="feature-card">
+              <h3>Recommended next step</h3>
+              <p>
+                Create a tagged release and attach the Windows executable so the Pages site has a
+                working download target.
+              </p>
+              <div class="button-group compact">
+                <a class="button" href="https://github.com/BrianNW/YT-Downloader/releases">Open releases</a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        Built from the YT Downloader repository. The downloader itself runs locally with Flask,
+        yt-dlp, and FFmpeg.
+      </footer>
+    </div>
+    <script src="./assets/site.js"></script>
+  </body>
+</html>

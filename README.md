@@ -111,6 +111,29 @@ run_desktop.bat
    git push -u origin main
    ```
 
+## GitHub Pages
+
+This repository now includes a static GitHub Pages site in `docs/` and an Actions workflow in `.github/workflows/deploy-pages.yml`.
+
+Important: GitHub Pages only hosts the project website. It cannot run the Flask downloader, yt-dlp jobs, or FFmpeg compression. The actual app still runs locally through `python app.py`, `python desktop.py`, or the packaged desktop executable.
+
+### Enable Pages
+
+1. Push this repository to GitHub.
+2. In GitHub, open **Settings** -> **Pages**.
+3. Set **Source** to **GitHub Actions**.
+4. Push a change to `docs/` or run the `Deploy GitHub Pages` workflow manually.
+
+### What gets published
+
+- `docs/index.html` is the public project site.
+- `docs/assets/` contains the static CSS and JavaScript for the site.
+- `.github/workflows/deploy-pages.yml` deploys the `docs/` folder on pushes to `main` or `master`.
+
+### Recommended release setup
+
+If you want the Pages site to offer a real desktop download, create a GitHub Release and attach the built `desktop.exe` from `dist/`.
+
 ## Notes
 
 - If `ffmpeg` is installed, the app can merge separate video/audio streams into a single MP4.
